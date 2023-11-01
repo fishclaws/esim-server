@@ -57,6 +57,11 @@ export class AppController {
       }),
   ) file: Express.Multer.File, @Res() res: Response) {
 
+
+    const files = this.appService.getFiles()
+    if (files.length > 10000) 
+      res.status(HttpStatus.BAD_REQUEST).send();
+
     const FormData = require('form-data');
     const formData = new FormData();
     formData.append('file', Buffer.from(file.buffer), file.originalname);
