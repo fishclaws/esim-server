@@ -43,6 +43,7 @@ const ImageViewer: React.FC = () => {
         <div id="cover"
         onClick={() => setSelectedImage(-1)}>
           <button className="button-23"  onClick={() => deleteImage()} >delete حذف</button>
+          <button className="button-22"  onClick={() => setSelectedImage(-1)} >close غلق</button>
           <div id="box">
             <img
             className="selected" 
