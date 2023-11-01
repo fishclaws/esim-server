@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
+const fs = require('fs');
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  getFiles(): string {
+    return fs.readdirSync('qr-codes')
+  }
+
+  deleteFile(filePath) {
+    fs.unlinkSync(filePath);
   }
 }
