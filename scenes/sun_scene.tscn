@@ -1,0 +1,88 @@
+[gd_scene load_steps=13 format=3 uid="uid://84de34ik50aw"]
+
+[ext_resource type="Shader" path="res://scenes/sun_scene.gdshader" id="1_888b2"]
+[ext_resource type="Script" path="res://scenes/Sun.gd" id="2_e71fj"]
+[ext_resource type="Shader" path="res://scenes/plasma.gdshader" id="3_a01g5"]
+[ext_resource type="Shader" path="res://scenes/corona.gdshader" id="3_koalg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_opv0p"]
+render_priority = 0
+shader = ExtResource("1_888b2")
+shader_parameter/color = Color(0.952941, 0.4, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_o6ic7"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dpoyi"]
+render_priority = 0
+shader = ExtResource("3_koalg")
+shader_parameter/s = 0.24
+shader_parameter/color = Color(1, 0.886275, 0, 1)
+shader_parameter/color2 = Color(0.635294, 0, 0.133333, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_cnsv3"]
+
+[sub_resource type="Environment" id="Environment_rpblw"]
+volumetric_fog_enabled = true
+volumetric_fog_emission_energy = 74.14
+volumetric_fog_gi_inject = 0.21
+volumetric_fog_length = 600.38
+
+[sub_resource type="FogMaterial" id="FogMaterial_53yk5"]
+density = 4.5873
+emission = Color(0.894118, 0.917647, 0, 1)
+height_falloff = 0.055953
+edge_fade = 0.0933033
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fbgxe"]
+render_priority = 0
+shader = ExtResource("3_a01g5")
+shader_parameter/MAX_STEPS = 100
+shader_parameter/MAX_DIST = 20.0
+shader_parameter/MIN_HIT_DIST = 0.0001
+shader_parameter/DERIVATIVE_STEP = 0.0001
+shader_parameter/fov = 45.0
+shader_parameter/cameraPos = Vector3(-5, 0, 0)
+shader_parameter/front = Vector3(1, 0, 0)
+shader_parameter/up = Vector3(0, 1, 0)
+
+[sub_resource type="QuadMesh" id="QuadMesh_7c3sn"]
+
+[node name="SunScene" type="Node3D"]
+
+[node name="Sun" type="MeshInstance3D" parent="."]
+transform = Transform3D(2.9999, 0.019848, 0.013972, -0.0198743, 2.99993, 0.0056106, -0.0139345, -0.00570298, 2.99996, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_opv0p")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_o6ic7")
+script = ExtResource("2_e71fj")
+camera_path = NodePath("../Camera3D")
+
+[node name="Corona" type="MeshInstance3D" parent="Sun"]
+transform = Transform3D(3.99948, 0.0538108, 0.0359329, 0.0519777, -3.9948, 0.197034, 0.0385369, -0.196541, -3.99498, -0.00120987, -0.000495161, 0.260472)
+material_override = SubResource("ShaderMaterial_dpoyi")
+mesh = SubResource("QuadMesh_cnsv3")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-1, 0, 8.74227e-08, 0, 1, 0, -8.74227e-08, 0, -1, 0, 0, -3)
+environment = SubResource("Environment_rpblw")
+
+[node name="FogVolume" type="FogVolume" parent="."]
+visible = false
+shape = 0
+material = SubResource("FogMaterial_53yk5")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+light_color = Color(0.92549, 0.34902, 0, 1)
+light_energy = 6.927
+light_indirect_energy = 8.61
+light_volumetric_fog_energy = 8.78
+light_size = 0.201
+omni_range = 1.724
+omni_attenuation = 0.406126
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(-2, 0, -1.74846e-07, 0, 2, 0, 1.74846e-07, 0, -2, 0, 0, -1.2693)
+visible = false
+material_override = SubResource("ShaderMaterial_fbgxe")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_7c3sn")

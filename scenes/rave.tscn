@@ -1,0 +1,217 @@
+[gd_scene load_steps=22 format=3 uid="uid://cgx4vnaqxk2ti"]
+
+[ext_resource type="Script" path="res://scenes/rave.gd" id="1_2qej8"]
+[ext_resource type="Material" uid="uid://d38t48ylkessk" path="res://shaders/rave.tres" id="1_avqj7"]
+[ext_resource type="Shader" path="res://scenes/sun_scene.gdshader" id="2_3es2w"]
+[ext_resource type="Shader" path="res://shaders/glitch.gdshader" id="2_6gtdh"]
+[ext_resource type="Script" path="res://scenes/Sun.gd" id="3_fg3pi"]
+[ext_resource type="Shader" path="res://shaders/corona.gdshader" id="4_r3gjq"]
+[ext_resource type="Shader" path="res://shaders/corona_2.gdshader" id="5_42uer"]
+
+[sub_resource type="Shader" id="Shader_r1jdo"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.2.dev2's StandardMaterial3D.
+
+shader_type spatial;
+render_mode blend_mix,depth_draw_opaque,cull_front,diffuse_burley,specular_schlick_ggx;
+uniform vec4 albedo : source_color;
+uniform sampler2D texture_albedo : source_color,filter_linear_mipmap,repeat_enable;
+uniform float point_size : hint_range(0,128);
+uniform float roughness : hint_range(0,1);
+uniform sampler2D texture_metallic : hint_default_white,filter_linear_mipmap,repeat_enable;
+uniform vec4 metallic_texture_channel;
+uniform sampler2D texture_roughness : hint_roughness_r,filter_linear_mipmap,repeat_enable;
+uniform float specular;
+uniform float metallic;
+uniform vec3 uv1_scale;
+uniform vec3 uv1_offset;
+uniform vec3 uv2_scale;
+uniform vec3 uv2_offset;
+
+
+void vertex() {
+	UV=UV*uv1_scale.xy+uv1_offset.xy;
+}
+
+
+
+
+uniform vec4 bg_color: source_color;
+
+float rand(vec2 st) {
+    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+}
+
+void fragment() {
+	float size = 100.0;
+	float prob = 0.9;
+	vec2 pos = floor(1.0 / size * FRAGCOORD.xy);
+	float color = 0.0;
+	float starValue = rand(pos);
+
+	if (starValue > prob)
+	{
+		vec2 center = size * pos + vec2(size, size) * 0.5;
+		float t = 0.9 + 0.2 * sin(TIME * 8.0 + (starValue - prob) / (1.0 - prob) * 45.0);
+		color = 1.0 - distance(FRAGCOORD.xy, center) / (0.5 * size);
+		color = color * t / (abs(FRAGCOORD.y - center.y)) * t / (abs(FRAGCOORD.x - center.x));
+	}
+	else if (rand(SCREEN_UV.xy / 20.0) > 0.996)
+	{
+		float r = rand(SCREEN_UV.xy);
+		color = r * (0.85 * sin(TIME * (r * 5.0) + 720.0 * r) + 0.95);
+	}
+	EMISSION.rgb  = vec3(color) + bg_color.rgb;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_06ipg"]
+render_priority = 0
+shader = SubResource("Shader_r1jdo")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = null
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/bg_color = null
+
+[sub_resource type="BoxMesh" id="BoxMesh_u2nsg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_oih0e"]
+render_priority = 0
+shader = ExtResource("2_6gtdh")
+shader_parameter/range = 0.05
+shader_parameter/noiseQuality = 250.0
+shader_parameter/noiseIntensity = 0.0088
+shader_parameter/offsetIntensity = 0.03
+shader_parameter/colorOffsetIntensity = 1.3
+
+[sub_resource type="QuadMesh" id="QuadMesh_a7q2a"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_we4w3"]
+material = ExtResource("1_avqj7")
+size = Vector2(4, 4)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_opv0p"]
+render_priority = 0
+shader = ExtResource("2_3es2w")
+shader_parameter/color = Color(0.952941, 0.4, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_h1gvg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ghkl1"]
+render_priority = 0
+shader = ExtResource("4_r3gjq")
+shader_parameter/color = Color(0.654902, 0, 0.615686, 1)
+shader_parameter/color2 = Color(1, 0.568627, 0, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_6auue"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6m1ch"]
+render_priority = 0
+shader = ExtResource("5_42uer")
+shader_parameter/color = Color(1, 0.423529, 0, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_fonfa"]
+
+[sub_resource type="Animation" id="Animation_qyx0l"]
+resource_name = "new_animation"
+length = 10.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Camera3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 10),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, -0.002, 1000), Vector3(0, -0.002, 6)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Camera3D:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"update": 0,
+"values": []
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Camera3D:fov")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"update": 0,
+"values": []
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_b4inj"]
+_data = {
+"new_animation": SubResource("Animation_qyx0l")
+}
+
+[node name="Rave" type="Node3D"]
+script = ExtResource("1_2qej8")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.002, 1000)
+fov = 60.0
+
+[node name="Skybox" type="MeshInstance3D" parent="Camera3D"]
+transform = Transform3D(5000, 0, 0, 0, 5000, 0, 0, 0, 5000, 0, 0.002, -6)
+material_override = SubResource("ShaderMaterial_06ipg")
+mesh = SubResource("BoxMesh_u2nsg")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Camera3D"]
+transform = Transform3D(60, 0, 0, 0, 60, 0, 0, 0, 60, 0, 0, -23.6904)
+material_override = SubResource("ShaderMaterial_oih0e")
+mesh = SubResource("QuadMesh_a7q2a")
+
+[node name="Torus" type="MeshInstance3D" parent="."]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, -0.0319781, -0.0377519, 0.03473)
+extra_cull_margin = 7778.26
+mesh = SubResource("QuadMesh_we4w3")
+
+[node name="SunScene" type="Node3D" parent="."]
+transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 1.02727, 0, 11.0665)
+
+[node name="Sun" type="MeshInstance3D" parent="SunScene"]
+transform = Transform3D(2.9999, 0.019848, 0.013972, -0.0198743, 2.99993, 0.0056106, -0.0139345, -0.00570298, 2.99996, 0, -1.58582, 0)
+material_override = SubResource("ShaderMaterial_opv0p")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_h1gvg")
+script = ExtResource("3_fg3pi")
+
+[node name="corona" type="MeshInstance3D" parent="SunScene/Sun"]
+transform = Transform3D(7, -1.14233e-09, 0, 6.00994e-09, 7, 0, 0, 9.31323e-10, 7, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_ghkl1")
+mesh = SubResource("QuadMesh_6auue")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SunScene/Sun"]
+transform = Transform3D(1.79994, -0.0119246, -0.0083607, 0.0119088, 1.79996, -0.00342179, 0.00838317, 0.00336636, 1.79998, -0.000213765, -8.75592e-05, 0.0460212)
+material_override = SubResource("ShaderMaterial_6m1ch")
+mesh = SubResource("QuadMesh_fonfa")
+skeleton = NodePath("../..")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_b4inj")
+}
+autoplay = "new_animation"
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]

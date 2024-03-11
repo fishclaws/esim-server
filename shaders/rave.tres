@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://d38t48ylkessk"]
+
+[ext_resource type="Shader" path="res://shaders/torus.gdshader" id="1_mdyd0"]
+
+[resource]
+render_priority = -1
+shader = ExtResource("1_mdyd0")
